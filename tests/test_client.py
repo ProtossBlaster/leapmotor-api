@@ -403,3 +403,76 @@ class TestMessageEndpoints:
             result = client.get_unread_message_count()
         assert result == 0
         client.close()
+
+
+# ---------------------------------------------------------------------------
+# set_charge_limit — schedule preservation (issue #18)
+# ---------------------------------------------------------------------------
+
+
+class TestSetChargeLimit:
+    """set_charge_limit() must change only chargesoc, never reset the plan."""
+
+    @staticmethod
+    def _capture_cmd_content(client: LeapmotorApiClient, schedule: dict[str, Any]) -> dict[str, Any]:
+        """Run set_charge_limit with a mocked schedule and return the sent payload."""
+        captured: dict[str, Any] = {}
+
+        def fake_remote_control(*, vin: str, action: str, cmd_content: str, **_: Any) -> dict[str, Any]:
+            captured["cmd_content"] = json.loads(cmd_content)
+            return {"code": 0}
+
+        with (
+            patch.object(client, "get_charge_schedule", return_value=schedule),
+            patch.object(client, "_remote_control", side_effect=fake_remote_control),
+        ):
+            client.set_charge_limit("VIN123", 80)
+        return captured["cmd_content"]
+
+    def test_enabled_partial_schedule_preserves_starttime(self) -> None:
+        """Regression for #18: an active start-time-only plan omits cycles/endtime.
+
+        The cloud returns only the populated fields, so guarding on `cycles`
+        used to route this into the all-defaults branch — resetting starttime
+        to 00:00 and disabling the schedule. Only chargesoc must change.
+        """
+        client = _make_client()
+        # Real live response captured for an enabled 10:00 plan.
+        schedule = {"chargeEnable": 1, "chargesoc": 100, "circulation": 0, "starttime": "10:00"}
+        sent = self._capture_cmd_content(client, schedule)
+
+        assert sent["starttime"] == "10:00"  # preserved, NOT reset to 00:00
+        assert sent["chargeEnable"] == 1  # preserved, NOT disabled
+        assert sent["chargesoc"] == 80  # the only intended change
+        client.close()
+
+    def test_full_schedule_preserved(self) -> None:
+        client = _make_client()
+        schedule = {
+            "chargeEnable": 1,
+            "chargesoc": 100,
+            "circulation": 1,
+            "cycles": "1,0,1,0,1,0,1",
+            "endtime": "07:30",
+            "recharge": 1,
+            "starttime": "23:00",
+        }
+        sent = self._capture_cmd_content(client, schedule)
+
+        assert sent["starttime"] == "23:00"
+        assert sent["endtime"] == "07:30"
+        assert sent["cycles"] == "1,0,1,0,1,0,1"
+        assert sent["circulation"] == 1
+        assert sent["recharge"] == 1
+        assert sent["chargeEnable"] == 1
+        assert sent["chargesoc"] == 80
+        client.close()
+
+    def test_no_schedule_uses_disabled_defaults(self) -> None:
+        client = _make_client()
+        sent = self._capture_cmd_content(client, {})
+
+        assert sent["chargeEnable"] == 0
+        assert sent["chargesoc"] == 80
+        assert sent["starttime"] == "00:00"
+        client.close()

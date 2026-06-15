@@ -819,15 +819,22 @@ class LeapmotorApiClient:
         # which may not include charge plan fields on some models (e.g. T03).
         schedule = self.get_charge_schedule(vin)
 
-        if schedule and schedule.get("cycles"):
+        if schedule:
+            # The cloud omits fields that aren't set for the current plan
+            # (an enabled start-time-only plan returns no cycles/endtime/recharge).
+            # Preserve every field the response *does* include — especially
+            # starttime and chargeEnable — and fall back per-field only for the
+            # ones that are genuinely absent. Guarding on cycles here would route
+            # such plans into the all-defaults branch below, resetting the start
+            # time to 00:00 and disabling the schedule (issue #18).
             charge_spec = RemoteActionCtlChargePlan(
                 charge_enable=schedule.get("chargeEnable", 0),
                 chargesoc=int(charge_limit_percent),
                 circulation=schedule.get("circulation", 0),
-                cycles=schedule["cycles"],
-                endtime=schedule.get("endtime", "08:00"),
+                cycles=schedule.get("cycles") or "1,2,3,4,5,6,7",
+                endtime=schedule.get("endtime") or "08:00",
                 recharge=schedule.get("recharge", 0),
-                starttime=schedule.get("starttime", "00:00"),
+                starttime=schedule.get("starttime") or "00:00",
             )
         else:
             # No existing schedule — use defaults with schedule disabled

@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+- Fixed `set_charge_limit()` resetting the start time to `00:00` and disabling the schedule when an active charge plan exists (#18). For an enabled start-time-only plan the cloud omits `cycles`/`endtime`/`recharge`, so guarding the read-modify-write on `cycles` routed it into the all-defaults branch. Now preserves every field the response includes (notably `starttime` and `chargeEnable`) and falls back per-field only for the genuinely missing ones; only `chargesoc` changes.
+
 ## [0.3.1] - 2026-05-28
 
 ### Fixed
