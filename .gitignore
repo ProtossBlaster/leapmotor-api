@@ -30,3 +30,8 @@ htmlcov/
 # Certs and keys
 *.pem
 *.key
+
+# Ingore folders
+logs/
+ignore/
+
