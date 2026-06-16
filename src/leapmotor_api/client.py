@@ -51,6 +51,7 @@ from .const import (
     REMOTE_CTL_ON3_ON,
     REMOTE_CTL_PILOTED_PARKING,
     REMOTE_CTL_PREPARE_CAR,
+    REMOTE_CTL_PREPARE_CAR_SCHEDULE,
     REMOTE_CTL_QUICK_COOL,
     REMOTE_CTL_QUICK_HEAT,
     REMOTE_CTL_REAR_SEATS,
@@ -111,6 +112,7 @@ from .models import (
     MessageList,
     RemoteActionCtlChargePlan,
     RemoteActionCtlClimateSchedule,
+    RemoteActionCtlPrepareCarSchedule,
     RemoteActionCtlSendDestination,
     Vehicle,
     VehicleStatus,
@@ -706,6 +708,55 @@ class LeapmotorApiClient:
     def cancel_climate_schedule(self, vin: str) -> dict[str, Any]:
         """Cancel all climate schedules (sends empty controls array)."""
         return self.set_climate_schedule(vin, controls=[])
+
+    def set_prepare_car_schedule(
+        self,
+        vin: str,
+        *,
+        controls: list[dict[str, Any]],
+    ) -> dict[str, Any]:
+        """Set the one-touch prepare-car schedule (cmd_id=361).
+
+        The schedule counterpart of :meth:`prepare_car` (cmd_id=360): instead
+        of pre-conditioning the car right now, it programs one or more
+        alarm-clock activations. Available on C10/B10 models.
+
+        Each invocation is a **full-state replacement**: the ``controls``
+        list must contain *all* active entries. Pass an empty list (or use
+        :meth:`cancel_prepare_car_schedule`) to cancel every existing entry.
+
+        Args:
+            vin: Vehicle identification number.
+            controls: List of schedule entries. Each entry is a dict with:
+                - datacontent: the preparation bundle — only the ENABLED
+                  dimensions are present. Known keys:
+                  - air_condition: same vocabulary as the climate schedule
+                    (mode "cold"/"hot"/"nohotcold", circle, windlevel, wshld,
+                    operate, temperature) plus position "all" and enable.
+                  - seat_setting: front seats — per seat "3"=heat, "13"=vent,
+                    "0"=off, plus enable.
+                  - steeringWheelHeatCtrl: {enable, level}.
+                  - rearMirrorHeating: {enable, value}.
+                  - syn_path: a navigation destination synced to the car
+                    (latitude/longitude as strings, address, config).
+                - days: list of ints (0=Sun..6=Sat), empty = one-time.
+                - enable: bool.
+                - set_id: opaque id; reuse the same id to edit an entry.
+                - start_time: "yyyy-MM-dd HH:mm:ss" in the vehicle timezone.
+
+        The gateway auto-stops the preparation after ~20 minutes.
+        """
+        schedule_spec = RemoteActionCtlPrepareCarSchedule(controls=controls)
+        _LOGGER.info("Prepare-car schedule cmd_content: %s", schedule_spec.cmd_content)
+        return self._remote_control(
+            vin=vin,
+            action=REMOTE_CTL_PREPARE_CAR_SCHEDULE,
+            cmd_content=schedule_spec.cmd_content,
+        )
+
+    def cancel_prepare_car_schedule(self, vin: str) -> dict[str, Any]:
+        """Cancel all prepare-car schedules (sends empty controls array)."""
+        return self.set_prepare_car_schedule(vin, controls=[])
 
     def get_climate_schedule(self, vin: str) -> list[dict[str, Any]]:
         """Retrieve active climate schedules (cmdId=171).

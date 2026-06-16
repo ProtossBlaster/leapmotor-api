@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- `set_prepare_car_schedule(vin, controls=[...])` and `cancel_prepare_car_schedule(vin)` — write support for the one-touch prepare-car schedule (cmd 361), the schedule counterpart of `prepare_car()` (cmd 360). Mirrors `set_climate_schedule`: a full-state replacement where an empty `controls` list cancels every entry. Also exposed on the async client. Reverse-engineered and verified end-to-end on a B10 (#6).
+
 ## [0.3.1] - 2026-05-28
 
 ### Fixed
