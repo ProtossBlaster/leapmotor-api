@@ -1220,9 +1220,8 @@ _SIGNAL_TO_NAMED: dict[str, str] = {
     "6048": "speedLimit",
     "6047": "speedLimitUnit",
     "12054": "speedLimitActive",
-    # Location
-    "3725": "latitude",
-    "3724": "longitude",
+    # Location is handled explicitly in _merge_signal_to_named so the
+    # signed signals "2"/"3" can take priority over the absolute-value ones.
     # Climate
     "1938": "acSwitch",
     "2183": "acSetting",
@@ -1297,11 +1296,23 @@ def _merge_signal_to_named(status_data: dict[str, Any]) -> dict[str, Any]:
         if signal_id in signal and named_field not in merged:
             merged[named_field] = signal[signal_id]
 
-    # GPS fallback: use alternative coordinates if primary are missing
-    if "latitude" not in merged and "2190" in signal:
-        merged["latitude"] = signal["2190"]
-    if "longitude" not in merged and "2191" in signal:
-        merged["longitude"] = signal["2191"]
+    # GPS coordinates, in priority order:
+    #   signals "2"/"3"   -> SIGNED coordinates (preserve hemisphere sign)
+    #   signals 3724/3725 -> absolute value (drops West/South sign)
+    #   signals 2191/2190 -> absolute value fallback
+    # The signed signals must win so West-longitude (Portugal/UK) and
+    # South-latitude positions are not mirrored to the wrong hemisphere.
+    # See https://github.com/markoceri/leapconnect/issues/21
+    if "longitude" not in merged:
+        for lon_signal in ("2", "3724", "2191"):
+            if lon_signal in signal:
+                merged["longitude"] = signal[lon_signal]
+                break
+    if "latitude" not in merged:
+        for lat_signal in ("3", "3725", "2190"):
+            if lat_signal in signal:
+                merged["latitude"] = signal[lat_signal]
+                break
 
     # Convert signal timestamp (milliseconds) to collectTime string
     if "sts" in signal and "collectTime" not in merged:

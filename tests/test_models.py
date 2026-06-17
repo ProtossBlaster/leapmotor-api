@@ -968,6 +968,35 @@ class TestVehicleStatusFromDict:
         assert vs.location.latitude == 40.85812
         assert vs.location.longitude == 14.28319
 
+    def test_signal_based_location_signed_priority(self) -> None:
+        """Signed signals 2/3 win over absolute-value 3724/3725 (issue #21).
+
+        West-longitude positions (Portugal/UK) keep the negative sign instead
+        of being mirrored to the Eastern hemisphere.
+        """
+        data: dict[str, Any] = {
+            "signal": {
+                "2": -8.52341,
+                "3": 38.98765,
+                "3724": 8.52341,
+                "3725": 38.98765,
+                "2191": 8.52341,
+                "2190": 38.98765,
+            },
+        }
+        vs = VehicleStatus.from_dict(data)
+        assert vs.location.latitude == 38.98765
+        assert vs.location.longitude == -8.52341
+
+    def test_signal_based_location_signed_fallback(self) -> None:
+        """Without signals 2/3, absolute-value signals are still used."""
+        data: dict[str, Any] = {
+            "signal": {"3725": 40.85812, "3724": 14.28319},
+        }
+        vs = VehicleStatus.from_dict(data)
+        assert vs.location.latitude == 40.85812
+        assert vs.location.longitude == 14.28319
+
     def test_signal_based_doors(self) -> None:
         data: dict[str, Any] = {
             "signal": {"1298": 1, "1277": 0, "1278": 0, "1279": 0, "1280": 0, "1281": 0},

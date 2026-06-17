@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Fixed
+- Fixed GPS coordinates losing the hemisphere sign on signal-based vehicles (B10/C10), placing West-longitude cars (Portugal/UK) in the wrong hemisphere ([#21](https://github.com/markoceri/leapconnect/issues/21)). The signals used so far (`3724`/`3725`, with fallbacks `2191`/`2190`) carry the coordinate as an absolute value, dropping the West/South sign. Now the signed signals `2` (longitude) / `3` (latitude) take priority, falling back to the absolute-value signals only when absent.
 - Fixed `set_charge_limit()` resetting the start time to `00:00` and disabling the schedule when an active charge plan exists ([#18](https://github.com/markoceri/leapconnect/issues/18)). For an enabled start-time-only plan the cloud omits `cycles`/`endtime`/`recharge`, so guarding the read-modify-write on `cycles` routed it into the all-defaults branch. Now preserves every field the response includes (notably `starttime` and `chargeEnable`) and falls back per-field only for the genuinely missing ones; only `chargesoc` changes.
 
 ## [0.3.1] - 2026-05-28
