@@ -216,6 +216,15 @@ client.fota_install("WLM...", task_id=123)
 client.fota_schedule("WLM...", task_id=123, schedule_time="2026-05-13T10:00:00")
 client.rear_seats("WLM...", seat_info="fold")
 client.prepare_car("WLM...", params={"temperature": "24"})
+# Schedule prepare-car (cmd 361) — full-state replacement; [] cancels all
+client.set_prepare_car_schedule("WLM...", controls=[{
+    "datacontent": {"air_condition": {"mode": "cold", "temperature": "18", "circle": "in",
+                                       "windlevel": "7", "wshld": "1", "operate": "manual",
+                                       "position": "all", "enable": True}},
+    "days": [1, 2, 3, 4, 5], "enable": True,
+    "set_id": "ios_<hash><epoch>", "start_time": "2026-06-17 07:30:00",
+}])
+client.cancel_prepare_car_schedule("WLM...")
 client.seat_adjust("WLM...", params={"position": "driver"})
 client.piloted_parking("WLM...", params={"action": "start"})
 client.set_speed_limit("WLM...", value="80")

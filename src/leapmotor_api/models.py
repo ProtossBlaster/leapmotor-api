@@ -2053,6 +2053,33 @@ class RemoteActionCtlPrepareCar(RemoteActionSpec):
 
 
 @dataclass(slots=True)
+class RemoteActionCtlPrepareCarSchedule(RemoteActionSpec):
+    """Prepare-car schedule command (cmd_id=361).
+
+    Schedules one or more one-touch vehicle-preparation activations (the
+    "prepare car" alarm clock) on C10/B10 models. Each ``controls`` entry
+    wraps a ``datacontent`` bundle (climate, seats, steering-wheel/mirror
+    heating, navigation) with ``days`` / ``start_time`` / ``set_id`` / ``enable``.
+
+    .. note::
+
+       Each invocation is a **full-state replacement**: the ``controls``
+       array must contain *all* active schedule entries. An empty list
+       cancels every existing prepare-car schedule.
+    """
+
+    cmd_id: str = field(default="361", init=False)
+    cmd_content: str = field(default="", init=False)
+    controls: list[dict[str, Any]] = field(default_factory=list)
+
+    def __post_init__(self) -> None:
+        self.cmd_content = json.dumps(
+            {"controls": self.controls},
+            separators=(",", ":"),
+        )
+
+
+@dataclass(slots=True)
 class RemoteActionCtlSeatAdjust(RemoteActionSpec):
     """Seat adjust command (cmd_id=280).
 
