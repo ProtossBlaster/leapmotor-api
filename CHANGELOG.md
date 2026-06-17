@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Documentation
 - Documented that the window command (cmd 230) value is 0–100 on C10/T03 but a **B10** uses a 0–10 scale (actuating only `0/2/5/10`; other values are accepted by the cloud but ignored by the car) — observed on-car. Noted on `RemoteActionCtlWindows` and `windows()`.
 
+### Added
+- `set_prepare_car_schedule(vin, controls=[...])` and `cancel_prepare_car_schedule(vin)` — write support for the one-touch prepare-car schedule (cmd 361), the schedule counterpart of `prepare_car()` (cmd 360). Mirrors `set_climate_schedule`: a full-state replacement where an empty `controls` list cancels every entry. Also exposed on the async client. Reverse-engineered and verified end-to-end on a B10 (#6).
+
 ## [0.3.1] - 2026-05-28
 
 ### Fixed

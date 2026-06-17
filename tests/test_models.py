@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from datetime import datetime
 from typing import Any
 
@@ -54,6 +55,7 @@ from leapmotor_api.models import (
     RemoteActionCtlOn3,
     RemoteActionCtlPilotedParking,
     RemoteActionCtlPrepareCar,
+    RemoteActionCtlPrepareCarSchedule,
     RemoteActionCtlRearSeats,
     RemoteActionCtlRearviewMirrorHeat,
     RemoteActionCtlSeatAdjust,
@@ -2303,6 +2305,25 @@ class TestRemoteActionCtlPrepareCar:
         action = RemoteActionCtlPrepareCar(cmd_content='{"temperature":"24"}')
         assert action.cmd_id == "360"
         assert action.cmd_content == '{"temperature":"24"}'
+
+
+class TestRemoteActionCtlPrepareCarSchedule:
+    def test_empty_is_full_state_cancel(self) -> None:
+        action = RemoteActionCtlPrepareCarSchedule()
+        assert action.cmd_id == "361"
+        assert action.cmd_content == '{"controls":[]}'
+
+    def test_wraps_controls(self) -> None:
+        entry = {
+            "datacontent": {"steeringWheelHeatCtrl": {"enable": True, "level": "2"}},
+            "days": [1, 2],
+            "enable": True,
+            "set_id": "ios_deadbeef1700000000",
+            "start_time": "2026-06-17 07:30:00",
+        }
+        action = RemoteActionCtlPrepareCarSchedule(controls=[entry])
+        assert action.cmd_id == "361"
+        assert action.cmd_content == json.dumps({"controls": [entry]}, separators=(",", ":"))
 
 
 class TestRemoteActionCtlSeatAdjust:
