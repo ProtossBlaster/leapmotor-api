@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Documentation
+- Documented that the window command (cmd 230) value is 0–100 on C10/T03 but a **B10** uses a 0–10 scale (actuating only `0/2/5/10`; other values are accepted by the cloud but ignored by the car) — observed on-car. Noted on `RemoteActionCtlWindows` and `windows()`.
+
 ## [0.3.1] - 2026-05-28
 
 ### Fixed

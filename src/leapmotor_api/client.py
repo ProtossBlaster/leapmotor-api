@@ -633,6 +633,9 @@ class LeapmotorApiClient:
         return self._remote_control(vin=vin, action=REMOTE_CTL_PILOTED_PARKING, cmd_content=cmd_content)
 
     def windows(self, vin: str, *, value: str | None = None) -> dict[str, Any]:
+        """Set the window position (cmd_id=230). ``value`` is 0 (closed) to 100 (fully open) on
+        C10/T03. A **B10** was observed to use a 0-10 scale instead, actuating only ``0/2/5/10`` —
+        see :class:`~leapmotor_api.models.RemoteActionCtlWindows`."""
         cmd_content = json.dumps({"value": value}, separators=(",", ":")) if value is not None else None
         return self._remote_control(vin=vin, action=REMOTE_CTL_WINDOWS, cmd_content=cmd_content)
 
