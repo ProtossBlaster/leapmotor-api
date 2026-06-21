@@ -47,6 +47,12 @@ def _build_layer_list(status: VehicleStatus | None) -> list[str]:
     is_plugged = status.is_plugged
     is_charging = status.is_charging
 
+    # --- Tailgate (rear trunk) ---
+    # Rendered in the background (below the body) so the open hatch does not
+    # overlap the vehicle; only the part protruding past the body is visible.
+    if doors.bbcm_back_door_status:
+        layers.append("carpic_tailgate_open.png")
+
     # --- Right side (far side, below body) ---
     # Right rear door
     if doors.rbcm_right_rear_door_status:
@@ -78,10 +84,6 @@ def _build_layer_list(status: VehicleStatus | None) -> list[str]:
         layers.append("carpic_leftfront_open.png")
     else:
         layers.append("carpic_leftfront_close.png")
-
-    # --- Tailgate (trunk) ---
-    if doors.bbcm_back_door_status:
-        layers.append("carpic_tailgate_open.png")
 
     # --- Windows (glass shown when closed / percent == 0) ---
     if (windows.left_front_window_percent or 0) == 0:

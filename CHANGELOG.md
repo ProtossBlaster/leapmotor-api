@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+- Fixed the dynamic car image compositing the open rear tailgate (`carpic_tailgate_open.png`) on top of the vehicle. The layer is now rendered in the background (below the body) so the open hatch no longer overlaps the car and only the protruding portion is visible.
+
 ## [0.3.2] - 2026-06-22
 
 ### Fixed
