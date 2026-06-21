@@ -1789,7 +1789,15 @@ class RemoteActionCtlSunroof(RemoteActionSpec):
 
 @dataclass(slots=True)
 class RemoteActionCtlWindows(RemoteActionSpec):
-    """Windows open/close command (cmd_id=230). Value: 0 (closed) to 100 (fully open)."""
+    """Windows open/close command (cmd_id=230). Value: 0 (closed) to 100 (fully open).
+
+    .. note::
+
+       The 0-100 range is the C10/T03 behaviour. A **B10** was observed on-car to use a **0-10**
+       scale instead, actuating only ``0 / 2 / 5 / 10`` (closed / ~20% / ~50% / fully open) — other
+       values are accepted by the cloud (``code=0``) but **ignored by the car**. Callers that want a
+       uniform 0-100% UI should map it to the model's native range (B10: ``round(pct / 10)``).
+    """
 
     value: str = WindowsValue.OPEN
     cmd_id: str = field(default="230", init=False)
