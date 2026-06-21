@@ -291,6 +291,17 @@ class AsyncLeapmotorApiClient:
     async def cancel_climate_schedule(self, vin: str) -> dict[str, Any]:
         return await asyncio.to_thread(self._client.cancel_climate_schedule, vin)
 
+    async def set_prepare_car_schedule(
+        self,
+        vin: str,
+        *,
+        controls: list[dict[str, Any]],
+    ) -> dict[str, Any]:
+        return await asyncio.to_thread(self._client.set_prepare_car_schedule, vin, controls=controls)
+
+    async def cancel_prepare_car_schedule(self, vin: str) -> dict[str, Any]:
+        return await asyncio.to_thread(self._client.cancel_prepare_car_schedule, vin)
+
     async def get_climate_schedule(self, vin: str) -> list[dict[str, Any]]:
         return await asyncio.to_thread(self._client.get_climate_schedule, vin)
 

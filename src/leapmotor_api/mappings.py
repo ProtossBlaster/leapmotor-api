@@ -38,6 +38,7 @@ from .const import (
     REMOTE_CTL_ON3_ON,
     REMOTE_CTL_PILOTED_PARKING,
     REMOTE_CTL_PREPARE_CAR,
+    REMOTE_CTL_PREPARE_CAR_SCHEDULE,
     REMOTE_CTL_QUICK_COOL,
     REMOTE_CTL_QUICK_HEAT,
     REMOTE_CTL_REAR_SEATS,
@@ -104,6 +105,7 @@ from .models import (
     RemoteActionCtlOn3,
     RemoteActionCtlPilotedParking,
     RemoteActionCtlPrepareCar,
+    RemoteActionCtlPrepareCarSchedule,
     RemoteActionCtlRearSeats,
     RemoteActionCtlRearviewMirrorHeat,
     RemoteActionCtlSeatAdjust,
@@ -290,6 +292,9 @@ REMOTE_ACTION_SPECS: dict[str, RemoteActionSpec] = {
     REMOTE_CTL_FOTA_SCHEDULE: RemoteActionCtlFotaSchedule(required_right=VehicleRight.FOTA_INSTALL_APPOINTMENT),
     REMOTE_CTL_REAR_SEATS: RemoteActionCtlRearSeats(required_right=VehicleRight.REAR_SEATS),
     REMOTE_CTL_PREPARE_CAR: RemoteActionCtlPrepareCar(required_right=VehicleRight.PREPARE_CAR),
+    REMOTE_CTL_PREPARE_CAR_SCHEDULE: RemoteActionCtlPrepareCarSchedule(
+        required_right=VehicleRight.PREPARE_CAR_ALARM
+    ),
     REMOTE_CTL_SEAT_ADJUST: RemoteActionCtlSeatAdjust(required_right=VehicleRight.SEAT_ADJUST),
     REMOTE_CTL_PILOTED_PARKING: RemoteActionCtlPilotedParking(required_right=VehicleRight.PILOTED_PARKING),
 }

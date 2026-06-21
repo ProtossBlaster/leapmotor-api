@@ -1800,7 +1800,15 @@ class RemoteActionCtlSunroof(RemoteActionSpec):
 
 @dataclass(slots=True)
 class RemoteActionCtlWindows(RemoteActionSpec):
-    """Windows open/close command (cmd_id=230). Value: 0 (closed) to 100 (fully open)."""
+    """Windows open/close command (cmd_id=230). Value: 0 (closed) to 100 (fully open).
+
+    .. note::
+
+       The 0-100 range is the C10/T03 behaviour. A **B10** was observed on-car to use a **0-10**
+       scale instead, actuating only ``0 / 2 / 5 / 10`` (closed / ~20% / ~50% / fully open) — other
+       values are accepted by the cloud (``code=0``) but **ignored by the car**. Callers that want a
+       uniform 0-100% UI should map it to the model's native range (B10: ``round(pct / 10)``).
+    """
 
     value: str = WindowsValue.OPEN
     cmd_id: str = field(default="230", init=False)
@@ -2061,6 +2069,33 @@ class RemoteActionCtlPrepareCar(RemoteActionSpec):
 
     cmd_id: str = field(default="360", init=False)
     cmd_content: str = ""
+
+
+@dataclass(slots=True)
+class RemoteActionCtlPrepareCarSchedule(RemoteActionSpec):
+    """Prepare-car schedule command (cmd_id=361).
+
+    Schedules one or more one-touch vehicle-preparation activations (the
+    "prepare car" alarm clock) on C10/B10 models. Each ``controls`` entry
+    wraps a ``datacontent`` bundle (climate, seats, steering-wheel/mirror
+    heating, navigation) with ``days`` / ``start_time`` / ``set_id`` / ``enable``.
+
+    .. note::
+
+       Each invocation is a **full-state replacement**: the ``controls``
+       array must contain *all* active schedule entries. An empty list
+       cancels every existing prepare-car schedule.
+    """
+
+    cmd_id: str = field(default="361", init=False)
+    cmd_content: str = field(default="", init=False)
+    controls: list[dict[str, Any]] = field(default_factory=list)
+
+    def __post_init__(self) -> None:
+        self.cmd_content = json.dumps(
+            {"controls": self.controls},
+            separators=(",", ":"),
+        )
 
 
 @dataclass(slots=True)
