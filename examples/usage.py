@@ -101,6 +101,8 @@ def main() -> None:
             print(f"    Schedule cycles:        {vs.battery.charge_plan.cycles}")
             print(f"    Schedule circulation:   {vs.battery.charge_plan.circulation}")
             print(f"    Schedule cancelled:     {vs.battery.charge_plan.cancelled_once}")
+            print(f"    Expected fuel range:    {vs.battery.expected_fuel_mileage} km")
+            print(f"    Expected combined range:{vs.battery.expected_combined_mileage} km")
 
             print("\n  [Driving]")
             print(f"    Speed:                  {vs.driving.speed}")
