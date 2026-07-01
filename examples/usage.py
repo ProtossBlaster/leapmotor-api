@@ -114,6 +114,8 @@ def main() -> None:
             print(f"    Speed limit active:     {vs.driving.speed_limit_active}")
             print(f"    Live remaining range:   {vs.driving.live_remaining_range}")
             print(f"    Max range:              {vs.driving.max_range}")
+            print(f"    Max fuel range:         {vs.driving.max_fuel_range}")
+            print(f"    Max combined range:     {vs.driving.max_combined_range}")
             print(f"    Range mode:             {vs.driving.range_mode}")
             print(f"    Parking brake:          {vs.driving.parking_brake_state}")
 
