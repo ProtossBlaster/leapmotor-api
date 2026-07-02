@@ -101,6 +101,8 @@ def main() -> None:
             print(f"    Schedule cycles:        {vs.battery.charge_plan.cycles}")
             print(f"    Schedule circulation:   {vs.battery.charge_plan.circulation}")
             print(f"    Schedule cancelled:     {vs.battery.charge_plan.cancelled_once}")
+            print(f"    Expected fuel range:    {vs.battery.expected_fuel_mileage} km")
+            print(f"    Expected combined range:{vs.battery.expected_combined_mileage} km")
 
             print("\n  [Driving]")
             print(f"    Speed:                  {vs.driving.speed}")
@@ -112,6 +114,8 @@ def main() -> None:
             print(f"    Speed limit active:     {vs.driving.speed_limit_active}")
             print(f"    Live remaining range:   {vs.driving.live_remaining_range}")
             print(f"    Max range:              {vs.driving.max_range}")
+            print(f"    Max fuel range:         {vs.driving.max_fuel_range}")
+            print(f"    Max combined range:     {vs.driving.max_combined_range}")
             print(f"    Range mode:             {vs.driving.range_mode}")
             print(f"    Parking brake:          {vs.driving.parking_brake_state}")
 

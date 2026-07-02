@@ -1127,6 +1127,127 @@ class TestVehicleStatusFromDict:
         assert vs.tires.front_left_kpa == 253
         assert vs.collect_time is not None
 
+    def test_signal_based_full_c10_reev_response(self) -> None:
+        """Comprehensive test with a realistic C10 REEV signal-based response."""
+        data: dict[str, Any] = {
+            "privacyGPS": 1,
+            "signal": {
+                "2191": 43.000000,
+                "2190": 19.00000,
+                "49": 0,
+                "1186": 0,
+                "1182": 30,
+                "2669": 0,
+                "2667": 228,
+                "1258": 0,
+                "1257": 0,
+                "1256": 0,
+                "1696": 0,
+                "3235": 95.5,
+                "1178": 0.0,
+                "1695": 0,
+                "1298": 1,
+                "1177": 338.7,
+                "1694": 0,
+                "2101": 0,
+                "2662": 0,
+                "1939": 0,
+                "1938": 0,
+                "1816": 0,
+                "50": 0,
+                "3636": 0,
+                "3713": 4,
+                "1197": 0,
+                "2681": 0,
+                "1943": 1,
+                "2119": 0,
+                "1349": 25.5,
+                "2118": 0,
+                "1": 1782835207487,
+                "1149": 0,
+                "2": -43.000000,
+                "1941": 7,
+                "3": -19.000000,
+                "sts": 1782835209646,
+                "3366": 0,
+                "1949": 0,
+                "1946": 0,
+                "1945": 0,
+                "1944": 0,
+                "1880": 0,
+                "1480": 1,
+                "3262": 1,
+                "1281": 0,
+                "1280": 0,
+                "3260": 101,
+                "2646": 233,
+                "1279": 0,
+                "1278": 0,
+                "1277": 0,
+                "3257": 124,
+                "2641": 0,
+                "1319": 0.0,
+                "3734": 1,
+                "1318": 7098,
+                "1879": 0,
+                "3735": 1,
+                "2648": 0,
+                "2100": 0,
+                "1693": 0,
+                "1010": 0,
+                "2660": 222,
+                "2184": 23.0,
+                "2183": 23.0,
+                "1204": 71,
+                "2655": 0,
+                "100003": 71.3,
+                "1724": 0,
+                "3261": 846,
+                "3258": 1060,
+                "2653": 228,
+                "3259": 745,
+                "3256": 936,
+                "3724": 43.000000,
+                "3725": 19.000000,
+                "47": 0,
+                "3263": 45382,
+                "100011": "77",
+                "100010": "581.6",
+                "100012": "658.6",
+                "100014": "62.7",
+                "100013": "462.9",
+                "100015": "525.6",
+                "100016": "0.0",
+                "2188": 0
+            },
+            "config": {
+                "3": {
+                    "cycles": "1,1,1,1,1,1,1",
+                    "endTime": "06:00",
+                    "percent": 95,
+                    "isEnable": 0,
+                    "recharge": 0,
+                    "beginTime": "22:00",
+                    "updateTime": "2026-06-25 12:36:54",
+                    "circulation": 2
+                }
+            },
+            "privacyData": 1
+        }
+        vs = VehicleStatus.from_dict(data)
+        assert vs.battery.soc == 71
+        assert vs.battery.charge_state is ChargeState.NOT_CHARGING
+        assert vs.driving.speed == 0.0
+        assert vs.driving.total_mileage == 7098
+        assert vs.location.latitude == -19.0
+        assert vs.is_locked is True
+        assert vs.tires.front_left_kpa == 228
+        assert vs.collect_time is not None
+        assert vs.battery.expected_fuel_mileage == 745
+        assert vs.battery.expected_combined_mileage == 846
+        assert vs.driving.max_fuel_range == 936
+        assert vs.driving.max_combined_range == 1060
+
     # -- New battery fields via from_dict --
 
     def test_battery_new_fields_from_dict(self) -> None:

@@ -687,6 +687,8 @@ class BatteryStatus:
     min_battery_temp: int | None = None
     battery_thermal_request: int | None = None
     healthy_charge_enabled: int | None = None
+    expected_fuel_mileage: int | None = None
+    expected_combined_mileage: int | None = None
 
     @property
     def dump_energy_kwh(self) -> float | None:
@@ -772,6 +774,8 @@ class BatteryStatus:
             min_battery_temp=data.get("minBatteryTemp"),
             battery_thermal_request=data.get("batteryThermalRequest"),
             healthy_charge_enabled=data.get("healthyChargeEnabled"),
+            expected_fuel_mileage=data.get("expectedFuelMileage"),
+            expected_combined_mileage=data.get("expectedCombinedMileage"),
         )
 
 
@@ -790,6 +794,8 @@ class DrivingStatus:
     max_range: int | None = None
     range_mode: int | None = None
     parking_brake_state: int | None = None
+    max_fuel_range: int | None = None
+    max_combined_range: int | None = None
 
     @property
     def is_parked(self) -> bool | None:
@@ -1087,6 +1093,8 @@ _DRIVING_FIELDS: dict[str, str] = {
     "maxRange": "max_range",
     "rangeMode": "range_mode",
     "parkingBrakeState": "parking_brake_state",
+    "maxFuelRange": "max_fuel_range",
+    "maxCombinedRange": "max_combined_range",
 }
 
 _LOCATION_FIELDS: dict[str, str] = {
@@ -1207,9 +1215,13 @@ _SIGNAL_TO_NAMED: dict[str, str] = {
     "48": "healthyChargeEnabled",
     "3737": "chargeScheduleCancelledOnce",
     # Range
+    "3259": "expectedFuelMileage",
     "3260": "expectedMileage",
+    "3261": "expectedCombinedMileage",
     "2188": "liveRemainingRange",
+    "3256": "maxFuelRange",
     "3257": "maxRange",
+    "3258": "maxCombinedRange",
     "3262": "rangeMode",
     # Driving
     "1319": "speed",
